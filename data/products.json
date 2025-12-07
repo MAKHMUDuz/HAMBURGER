@@ -6,7 +6,7 @@
     "price": 380,
     "category": "burgers",
     "image": "/images/products/burger-signature.png",
-    "isAvailable": true
+    "isAvailable": false
   },
   {
     "id": "cyber-cheese",

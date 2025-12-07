@@ -12,7 +12,7 @@ const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat
 const robotoMono = Roboto_Mono({ subsets: ["latin"], variable: "--font-roboto-mono" });
 
 export const metadata: Metadata = {
-  title: "F5 Burger | Tazeliği F5’le Yenile",
+  title: "F5 Burger | Lezzetin ta Kendisi🤤",
   description: "Cyber-Neon Premium Burger Experience",
 };
 

@@ -8,5 +8,15 @@
     "isActive": true,
     "id": "a9m67k4zy",
     "usedCount": 0
+  },
+  {
+    "code": "XCVB",
+    "type": "percent",
+    "value": -10,
+    "minCartAmount": -1,
+    "usageLimit": 100,
+    "isActive": true,
+    "id": "a49v9ngn0",
+    "usedCount": 0
   }
 ]
