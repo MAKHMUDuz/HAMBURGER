@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
 
 model Order {
@@ -35,4 +35,74 @@ model OrderItem {
   price       Float
   extras      String   // Stored as JSON string or comma-separated
   totalPrice  Float
+}
+
+// --- Product Management V2 ---
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  slug     String    @unique
+  order    Int       @default(0)
+  
+  products Product[]
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  price         Float
+  image         String
+  stock         Int      @default(0)
+  isAvailable   Boolean  @default(true)
+  discountPrice Float?
+  
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  
+  variants      ProductVariant[]
+  extraGroups   ProductExtraGroup[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ProductVariant {
+  id        String  @id @default(uuid())
+  name      String  // e.g. "120g"
+  price     Float   // Specific price for this variant. If 0, uses product price? Better to be explicit.
+  
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ExtraGroup {
+  id        String  @id @default(uuid())
+  name      String  // "Extra Malzemeler", "Soslar"
+  minSelect Int     @default(0) // 0 = optional
+  maxSelect Int     @default(10) // Limit
+  
+  extras    Extra[]
+  products  ProductExtraGroup[]
+}
+
+model Extra {
+  id           String     @id @default(uuid())
+  name         String
+  price        Float
+  
+  extraGroupId String
+  group        ExtraGroup @relation(fields: [extraGroupId], references: [id], onDelete: Cascade)
+}
+
+// Many-to-Many Relation table
+model ProductExtraGroup {
+  productId    String
+  extraGroupId String
+  
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  group        ExtraGroup @relation(fields: [extraGroupId], references: [id], onDelete: Cascade)
+
+  @@id([productId, extraGroupId])
 }

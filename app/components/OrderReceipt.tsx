@@ -56,8 +56,14 @@ export default function OrderReceipt({ order, onClose }: OrderReceiptProps) {
                     <div className="w-full border-t-2 border-dashed border-black/20 pt-4 space-y-1">
                         <div className="flex justify-between">
                             <span>Ara Toplam</span>
-                            <span>{order.total} ₺</span>
+                            <span>{order.items.reduce((sum: number, item: any) => sum + item.totalPrice, 0)} ₺</span>
                         </div>
+                        {order.couponCode && (
+                            <div className="flex justify-between text-xs font-bold">
+                                <span>Kupon ({order.couponCode})</span>
+                                <span>KULLANILDI</span>
+                            </div>
+                        )}
                         <div className="flex justify-between">
                             <span>Teslimat</span>
                             <span>0 ₺</span>

@@ -1,16 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { Product } from './definitions';
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'products.json');
-
-export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    category: "burgers" | "chicken" | "sides" | "drinks" | "desserts";
-    image: string;
-}
 
 export async function getProducts(): Promise<Product[]> {
     try {

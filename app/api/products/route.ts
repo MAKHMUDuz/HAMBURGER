@@ -1,18 +1,17 @@
-import { NextResponse } from "next/server";
+import { checkAdminAccess } from "@/lib/auth";
 import { getProducts, saveProducts } from "@/lib/product-db";
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET() {
+    // GET is public for the menu
     const products = await getProducts();
     return NextResponse.json(products);
 }
 
 export async function PUT(request: Request) {
-    // Check auth
-    const cookieStore = await cookies();
-    const isAdmin = cookieStore.get("admin_session")?.value === "true";
-
-    if (!isAdmin) {
+    // Check auth via helper
+    const auth = await checkAdminAccess();
+    if (!auth.authorized) {
         return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 

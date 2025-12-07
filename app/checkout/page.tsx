@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useCart } from "@/lib/cart-context";
 import { cn } from "@/lib/utils";
 import { CheckCircleIcon, BanknotesIcon, CreditCardIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
 import OrderReceipt from "@/app/components/OrderReceipt";
+import { useSearchParams } from "next/navigation";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
     const { items, cartTotal, clearCart } = useCart();
+    const searchParams = useSearchParams();
+    const initialCoupon = searchParams.get('coupon');
+
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
@@ -20,11 +24,39 @@ export default function CheckoutPage() {
     const [isOrdering, setIsOrdering] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState<any>(null);
 
+    // Coupon State
+    const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
+
+    useEffect(() => {
+        if (initialCoupon && cartTotal > 0) {
+            verifyCoupon(initialCoupon);
+        }
+    }, [initialCoupon, cartTotal]);
+
+    const verifyCoupon = async (code: string) => {
+        try {
+            const res = await fetch("/api/campaigns/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code, cartTotal }),
+            });
+            const data = await res.json();
+            if (data.isValid) {
+                setAppliedCoupon(data.campaign);
+                setDiscountAmount(data.discountAmount);
+            }
+        } catch (error) {
+            console.error("Coupon check failed", error);
+        }
+    };
+
+    const finalTotal = Math.max(0, cartTotal - discountAmount);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsOrdering(true);
 
-        // Simulate API Call
         try {
             const fullAddress = `${formData.address}, ${formData.neighborhood}, Bina: ${formData.buildingNo}`;
 
@@ -35,7 +67,8 @@ export default function CheckoutPage() {
                     ...formData,
                     fullAddress,
                     items,
-                    total: cartTotal
+                    total: finalTotal, // Send discounted total
+                    couponCode: appliedCoupon?.code
                 })
             });
 
@@ -159,7 +192,7 @@ export default function CheckoutPage() {
                             disabled={isOrdering || items.length === 0}
                             className="mt-8 w-full rounded bg-success py-4 font-montserrat text-lg font-bold uppercase tracking-widest text-white transition-all hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-green-500/20"
                         >
-                            {isOrdering ? "İşleniyor..." : `Siparişi Tamamla • ${cartTotal} TL`}
+                            {isOrdering ? "İşleniyor..." : `Siparişi Tamamla • ${finalTotal.toFixed(2)} TL`}
                         </button>
                     </form>
                 </div>
@@ -184,17 +217,31 @@ export default function CheckoutPage() {
                             <span>Ara Toplam</span>
                             <span>{cartTotal} TL</span>
                         </div>
+                        {appliedCoupon && (
+                            <div className="flex justify-between text-green-500 font-bold">
+                                <span>Kupon ({appliedCoupon.code})</span>
+                                <span>-{discountAmount} TL</span>
+                            </div>
+                        )}
                         <div className="flex justify-between text-gray-500">
                             <span>Teslimat Ücreti</span>
                             <span>0 TL</span>
                         </div>
                         <div className="flex justify-between text-xl font-bold text-primary mt-4">
                             <span>TOPLAM</span>
-                            <span>{cartTotal} TL</span>
+                            <span>{finalTotal.toFixed(2)} TL</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function CheckoutPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen pt-32 text-center">Yükleniyor...</div>}>
+            <CheckoutContent />
+        </Suspense>
     );
 }

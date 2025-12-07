@@ -1,0 +1,12 @@
+[
+  {
+    "code": "RAHIMOV10",
+    "type": "percent",
+    "value": 10,
+    "minCartAmount": 1,
+    "usageLimit": 100,
+    "isActive": true,
+    "id": "a9m67k4zy",
+    "usedCount": 0
+  }
+]

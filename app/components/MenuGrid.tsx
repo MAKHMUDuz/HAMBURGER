@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 // import { menuProducts, Product } from "@/lib/menu-data"; // OLD static import
-import { Product } from "@/lib/product-db"; // Interface only
+import { Product } from "@/lib/definitions"; // Interface only
 import ProductCard from "./ProductCard";
 import { cn } from "@/lib/utils";
 import CustomizerPanel from "./CustomizerPanel";
