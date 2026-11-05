@@ -65,11 +65,11 @@ Bu, Next.js, TypeScript ve Prisma ile oluşturulmuş, çevrimiçi bir burger sip
 
 1.  Depoyu klonlayın:
     ```bash
-    git clone https://github.com/HAMBURGER.git
+    git clone https://github.com/MAKHMUDuz/HAMBURGER.git
     ```
 2.  Proje dizinine gidin:
     ```bash
-    cd hamburger
+    cd HAMBURGER
     ```
 3.  Bağımlılıkları yükleyin:
     ```bash
